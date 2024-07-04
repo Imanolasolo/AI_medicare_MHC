@@ -1,4 +1,4 @@
 streamlit
-sqlite3  # La biblioteca sqlite3 está incluida en la biblioteca estándar de Python, por lo que no necesitas instalarla.
+# sqlite3  # La biblioteca sqlite3 está incluida en la biblioteca estándar de Python, por lo que no necesitas instalarla.
 bcrypt
 PyJWT
