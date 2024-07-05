@@ -5,15 +5,15 @@ import jwt  # Importar el módulo JWT
 # Clave secreta para firmar los tokens JWT
 SECRET_KEY = "tu_clave_secreta"  # ¡Cambia esto por una clave segura en un entorno de producción!
 
-def generate_token(user_id, role):
+def generate_token(dni, role):
     payload = {
-        'user_id': user_id,
+        'dni': dni,
         'role': role
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    # return token.decode('utf-8')
+    return token
 
-def create_user(username, password, role):
+def create_user(dni, username, password, role):
     conn = sqlite3.connect('hospital.db')
     c = conn.cursor()
     try:
@@ -22,9 +22,9 @@ def create_user(username, password, role):
         c.execute('SELECT role_name FROM roles WHERE id = ?', (role,))
         role_name = c.fetchone()
         if role_name:
-            user_id = generate_token(username, role_name[0])  # Genera el token JWT como ID
-            c.execute('INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)', 
-                      (user_id, username, hashed_password.decode('utf-8'), role_name[0]))
+            user_id = generate_token(dni, role_name[0])  # Genera el token JWT como ID
+            c.execute('INSERT INTO users (id, dni, username, password, role) VALUES (?, ?, ?, ?, ?)', 
+                      (user_id, dni, username, hashed_password.decode('utf-8'), role_name[0]))
             conn.commit()
             return True
         else:
@@ -38,7 +38,7 @@ def read_users():
     conn = sqlite3.connect('hospital.db')
     c = conn.cursor()
     c.execute('''
-        SELECT users.id, users.username, users.role
+        SELECT users.id, users.dni, users.username, users.role
         FROM users
     ''')
     users = c.fetchall()
@@ -46,13 +46,13 @@ def read_users():
     return users
 
 
-def update_user(user_id, username, password, role):
+def update_user(user_id, dni, username, password, role):
     conn = sqlite3.connect('hospital.db')
     c = conn.cursor()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     try:
-        c.execute('UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?', 
-                  (username, hashed_password.decode('utf-8'), role, user_id))
+        c.execute('UPDATE users SET dni = ?, username = ?, password = ?, role = ? WHERE id = ?', 
+                  (dni, username, hashed_password.decode('utf-8'), role, user_id))
         conn.commit()
     except sqlite3.Error as e:
         print(f"Error updating user: {e}")
@@ -112,3 +112,6 @@ def delete_role(role_id):
         print(f"Error deleting role: {e}")
     finally:
         conn.close()
+
+
+

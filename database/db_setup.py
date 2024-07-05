@@ -2,10 +2,11 @@ import sys
 import os
 import sqlite3
 import bcrypt
-from crud import generate_token  # Importar generate_token desde crud.py
 
 # Añadir el directorio raíz del proyecto al sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from crud import generate_token  # Importar generate_token desde crud.py
 
 def init_db():
     conn = sqlite3.connect('hospital.db')
@@ -13,6 +14,7 @@ def init_db():
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
+            dni TEXT NOT NULL,  -- Nueva columna para DNI
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             role TEXT NOT NULL
@@ -36,8 +38,8 @@ def init_db():
     if not c.fetchone():
         hashed_password = bcrypt.hashpw(admin_password.encode('utf-8'), bcrypt.gensalt())
         admin_id = generate_token(admin_username, admin_role)  # Usar el nombre de usuario para generar el token
-        c.execute('INSERT INTO users (id, username, password, role) VALUES (?, ?, ?, ?)', 
-                  (admin_id, admin_username, hashed_password.decode('utf-8'), admin_role))
+        c.execute('INSERT INTO users (id, dni, username, password, role) VALUES (?, ?, ?, ?, ?)', 
+                  (admin_id, 'admin_dni', admin_username, hashed_password.decode('utf-8'), admin_role))
         print("Usuario administrador creado con éxito.")
     else:
         print("Usuario administrador ya existe.")
@@ -47,4 +49,3 @@ def init_db():
 
 if __name__ == "__main__":
     init_db()
-

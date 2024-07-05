@@ -3,9 +3,9 @@ import datetime
 
 SECRET_KEY = 'your_secret_key'
 
-def generate_token(user_id, role):
+def generate_token(dni, role):
     payload = {
-        'user_id': user_id,
+        'dni': dni,
         'role': role,
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
     }
@@ -20,3 +20,4 @@ def decode_token(token):
         return None
     except jwt.InvalidTokenError:
         return None
+
