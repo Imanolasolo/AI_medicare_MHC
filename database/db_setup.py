@@ -11,6 +11,8 @@ from crud import generate_token  # Importar generate_token desde crud.py
 def init_db():
     conn = sqlite3.connect('hospital.db')
     c = conn.cursor()
+    
+    # Crear tabla de usuarios
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
@@ -20,11 +22,64 @@ def init_db():
             role TEXT NOT NULL
         )
     ''')
+    
+    # Crear tabla de roles
     c.execute('''
         CREATE TABLE IF NOT EXISTS roles (
             id INTEGER PRIMARY KEY,
             role_name TEXT UNIQUE NOT NULL,
             permissions TEXT NOT NULL
+        )
+    ''')
+    
+    # Crear tabla de pacientes
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS pacientes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            primer_apellido TEXT NOT NULL,
+            segundo_apellido TEXT,
+            primer_nombre TEXT NOT NULL,
+            segundo_nombre TEXT,
+            tipo_documento_identificacion TEXT NOT NULL CHECK(tipo_documento_identificacion IN ('cédula de ciudadanía', 'cédula de identidad', 'pasaporte', 'carnet de refugiado', 'S/D')),
+            estado_civil TEXT NOT NULL,
+            sexo TEXT NOT NULL,
+            telefono_fijo TEXT,
+            telefono_celular TEXT,
+            correo_electronico TEXT,
+            lugar_nacimiento TEXT NOT NULL,
+            nacionalidad TEXT NOT NULL,
+            edad INTEGER NOT NULL,
+            condicion_edad TEXT NOT NULL CHECK(condicion_edad IN ('H', 'D', 'M', 'A')),
+            autocertificacion_etnica TEXT,
+            nacionalidad_etnica TEXT,
+            pueblos TEXT,
+            nivel_educacion TEXT,
+            estado_nivel_educacion TEXT,
+            ocupacion TEXT,
+            tipo_empresa_trabajo TEXT,
+            seguro_salud_principal TEXT,
+            tipo_bono_recibe TEXT,
+            provincia TEXT,
+            canton TEXT,
+            parroquia TEXT,
+            barrio_sector TEXT,
+            calle_principal TEXT,
+            calle_secundaria TEXT,
+            referencia TEXT
+        )
+    ''')
+
+    # Crear tabla de acompañantes
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS acompanantes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            en_caso_necesario_llamar_a TEXT,
+            parentesco TEXT NOT NULL,
+            direccion TEXT,
+            telefono_acompanante TEXT,
+            nombre_apellido_representante TEXT,
+            identificacion_representante TEXT,
+            telefono_representante TEXT
         )
     ''')
 

@@ -1,8 +1,8 @@
-# admin_dashboard.py
-
 import streamlit as st
 from crud import create_user, read_users, update_user, delete_user
 from crud import create_role, read_roles, update_role, delete_role
+import subprocess
+import os
 
 def admin_dashboard():
     st.sidebar.title("Panel de Administrador")
@@ -12,6 +12,12 @@ def admin_dashboard():
 
     st.sidebar.header("Manejo Roles")
     role_task = st.sidebar.selectbox("Seleccione tarea de rol", ["Crear Rol", "Lista de roles", "Editar rol", "Borrar rol"])
+
+    # Botón para abrir la aplicación de calendario
+    if st.sidebar.button("Gestión Quirófano"):
+        # Ejecutar la aplicación calendar.py en un nuevo proceso
+        subprocess.Popen(["streamlit", "run", "Modules/Calendar/calendar_quirofano.py"], cwd=os.getcwd())
+        st.write("**La aplicación de gestión de quirófanos se ha abierto en una nueva ventana.**")
 
     st.sidebar.write("---")
 
@@ -34,19 +40,43 @@ def admin_dashboard():
         delete_role_page()
 
 def create_user_page():
-    st.title("Crear Usuario")
-    dni = st.text_input("DNI", key="create_user_dni")
-    username = st.text_input("Nombre de usuario", key="create_user_username")
-    password = st.text_input("Contraseña", type="password", key="create_user_password")
-    roles = read_roles()  # Obtener la lista de roles actualizados
-    role_names = [role[1] for role in roles]  # Obtener nombres de roles (suponiendo que el nombre está en la posición 1)
-    role = st.selectbox("Rol", role_names, key="create_user_role")  # Mostrar nombres de roles en el selector
-    selected_role_id = roles[role_names.index(role)][0]  # Obtener ID del rol seleccionado por su nombre
-    if st.button("Crear", key="create_user_button"):
-        if create_user(dni, username, password, selected_role_id):  # Pasar el ID del rol seleccionado
-            st.success("Usuario creado exitosamente")
+    st.title("Crear Nuevo Usuario")
+
+    roles = read_roles()  # Lee los roles de la base de datos
+
+    # Verifica que roles no esté vacío
+    if not roles:
+        st.error("No se encontraron roles en la base de datos.")
+        return
+
+    # Extrae los nombres de los roles y verifica que no haya valores None
+    role_names = [role[1] for role in roles if role[1] is not None]  # Supongo que role[1] es el nombre del rol
+
+    # Verifica que role_names no esté vacío
+    if not role_names:
+        st.error("No se encontraron nombres de roles en la base de datos.")
+        return
+
+    role = st.selectbox("Selecciona el rol", role_names)
+
+    # Verifica que role esté en role_names
+    if role not in role_names:
+        st.error("El rol seleccionado no es válido.")
+        return
+
+    # Obtener ID del rol seleccionado
+    selected_role_id = roles[role_names.index(role)][0]  # Obtener ID del rol seleccionado
+
+    username = st.text_input("Nombre de Usuario")
+    password = st.text_input("Contraseña", type="password")
+    dni = st.text_input("DNI")
+
+    if st.button("Crear Usuario"):
+        if create_user(dni, username, password, selected_role_id):
+            st.success("Usuario creado exitosamente.")
         else:
-            st.error("Usuario ya existe")
+            st.error("Error al crear el usuario.")
+
 
 def read_users_page():
     st.title("Usuarios")
@@ -114,3 +144,5 @@ def delete_role_page():
     if st.button("Borrar", key="delete_role_button"):
         delete_role(role_id)
         st.success("Rol borrado exitosamente")
+
+
