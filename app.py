@@ -112,7 +112,7 @@ def login():
                     token = generate_token(user[0], user[4])
                     st.session_state['token'] = token  # Guardar el token en la sesión
                     st.session_state['role'] = user[4]    # Guardar el rol del usuario en la sesión
-                    st.experimental_rerun()  # Volver a cargar la aplicación para actualizar el estado
+                    st.rerun()  # Volver a cargar la aplicación para actualizar el estado
                 else:
                     st.error('Usuario o contraseña incorrectos')
             else:
@@ -136,7 +136,7 @@ def main():
             # Botón para cambiar de usuario
             if st.sidebar.button('Cambio usuario', key='switch_user_button'):
                 st.session_state.clear()  # Limpiar la sesión
-                st.experimental_rerun()
+                st.rerun()
             
             # Mostrar dashboard según el rol
             if role_name == 'admin':
