@@ -16,7 +16,7 @@ def admin_dashboard():
     # Botón para abrir la aplicación de calendario
     if st.sidebar.button("Gestión Quirófano"):
         # Ejecutar la aplicación calendar.py en un nuevo proceso
-        subprocess.Popen(["streamlit", "run", "Modules/Calendar/calendar_quirofano.py"], cwd=os.getcwd())
+        subprocess.Popen(["streamlit", "run", "Modules/Calendar_quirofanos/calendar_quirofano.py"], cwd=os.getcwd())
         st.write("**La aplicación de gestión de quirófanos se ha abierto en una nueva ventana.**")
 
     st.sidebar.write("---")
